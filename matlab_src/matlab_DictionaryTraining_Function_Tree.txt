@@ -1,0 +1,16 @@
+
+/Users/robertjones/Desktop/W24/556/project/super-res-sparse-coding/sparseCodingSuperResolution-master/
+
+Demo_Dictionary_Training_Single_rj.m
+
+	rnd_smp_patch.m (n)
+		sample_patches.m (n)
+	patch_pruning.m (n)
+
+	train_coupled_dict_rj.m (*)
+		reg_sparse_coding_rj.m (*)
+
+			L1QP_FeatureSign_Set_rj.m (*)
+				L1QP_FeatureSign_yang_rj.m (*)
+			getObjective_RegSc_rj.m (*)
+			l2ls_learn_basis_dual_rj.m (*)
