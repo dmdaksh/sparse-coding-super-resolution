@@ -28,10 +28,7 @@ X = X./repmat(sqrt(sum(X.^2, 1)), hDim+lDim, 1);
 idx = randperm(size(X, 2));
 
 % dictionary training
-disp('reg_sparse_coding')
-tic
 [D] = reg_sparse_coding(X, dict_size, [], 0, lambda, 40);
-toc
 
 Dh = D(1:hDim, :);
 Dl = D(hDim+1:end, :);
@@ -42,5 +39,5 @@ Dl = D(hDim+1:end, :);
 
 patch_size = sqrt(size(Dh, 1));
 
-dict_path = ['NewDictionary/D_' num2str(dict_size) '_' num2str(lambda) '_' num2str(patch_size) '_s' num2str(upscale) '.mat' ];
+dict_path = ['Dictionary/D_' num2str(dict_size) '_' num2str(lambda) '_' num2str(patch_size) '_s' num2str(upscale) '.mat' ];
 save(dict_path, 'Dh', 'Dl');

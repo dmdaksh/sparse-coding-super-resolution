@@ -61,16 +61,22 @@ img_lr_file = listdir(img_lr_dir)
 for i in tqdm(range(len(img_lr_file))):
     # Read test image
     img_name = img_lr_file[i]
-    img_name_dir = list(img_name)
-    img_name_dir = np.delete(np.delete(np.delete(np.delete(img_name_dir, -1), -1), -1), -1)
-    img_name_dir = ''.join(img_name_dir)
-    if isdir('data/results/' + dict_name + '_' + img_name_dir) == False:
-        new_dir = makedirs('{}{}'.format('data/results/' + dict_name + '_', img_name_dir))
+    
+    ### bad code
+    # img_name_dir = list(img_name)
+    # img_name_dir = np.delete(np.delete(np.delete(np.delete(img_name_dir, -1), -1), -1), -1)
+    # img_name_dir = ''.join(img_name_dir)
+    ###
+
+    img_name_stripped = img_name.split('.')[0] 
+    if isdir('data/results/' + dict_name + '_' + img_name_stripped) == False:
+        new_dir = makedirs('{}{}'.format('data/results/' + dict_name + '_', img_name_stripped))
     img_lr = imread('{}{}'.format(img_lr_dir, img_name))
+    print(img_lr.shape)
 
     # Read and save ground truth image
     img_hr = imread('{}{}'.format(img_hr_dir, img_name))
-    imsave('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_dir, '/', '3HR.png'), img_hr, quality=100)
+    imsave('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_stripped, '/', '3HR.png'), img_hr, quality=100)
     img_hr_y = rgb2ycbcr(img_hr)[:, :, 0]
 
     # Change color space
@@ -102,7 +108,7 @@ for i in tqdm(range(len(img_lr_file))):
 
     # Bicubic interpolation for reference
     img_bc = resize(img_lr_ori, (img_hr.shape[0], img_hr.shape[1]))
-    imsave('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_dir, '/', '1bicubic.png'), img_bc, quality=100)
+    imsave('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_stripped, '/', '1bicubic.png'), img_bc, quality=100)
     img_bc_y = rgb2ycbcr(img_bc)[:, :, 0]
 
     # Compute RMSE for the illuminance
@@ -110,7 +116,7 @@ for i in tqdm(range(len(img_lr_file))):
     rmse_bc_hr = np.zeros((1,)) + rmse_bc_hr
     rmse_sr_hr = np.sqrt(mean_squared_error(img_hr_y, img_sr_y))
     rmse_sr_hr = np.zeros((1,)) + rmse_sr_hr
-    np.savetxt('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_dir, '/', 'RMSE_bicubic.txt'), rmse_bc_hr)
-    np.savetxt('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_dir, '/', 'RMSE_SR.txt'), rmse_sr_hr)
+    np.savetxt('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_stripped, '/', 'RMSE_bicubic.txt'), rmse_bc_hr)
+    np.savetxt('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_stripped, '/', 'RMSE_SR.txt'), rmse_sr_hr)
 
-    imsave('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_dir, '/', '2SR.png'), img_sr, quality=100)
+    imsave('{}{}{}{}'.format('data/results/' + dict_name + '_', img_name_stripped, '/', '2SR.png'), img_sr, quality=100)
