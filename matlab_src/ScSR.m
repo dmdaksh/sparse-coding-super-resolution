@@ -25,6 +25,7 @@ gridy = [gridy, h-patch_size-2];
 
 A = Dl'*Dl;
 cnt = 0;
+nDlt = -Dl';
 
 % loop to recover each low-resolution patch
 for ii = 1:length(gridx),
@@ -52,7 +53,7 @@ for ii = 1:length(gridx),
             y = mPatchFea;
         end
         
-        b = -Dl'*y;
+        b = nDlt*y;
       
         % sparse recovery
         w = L1QP_FeatureSign_yang(lambda, A, b);

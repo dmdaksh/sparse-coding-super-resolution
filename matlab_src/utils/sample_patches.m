@@ -29,8 +29,8 @@ patch_num = length(xrow);
 hIm = double(hIm);
 lIm = double(lIm);
 
-H = zeros(patch_size^2,     length(xrow));
-L = zeros(4*patch_size^2,   length(xrow));
+HP = zeros(patch_size^2,     length(xrow));
+LP = zeros(4*patch_size^2,   length(xrow));
  
 % compute the first and second order gradients
 hf1 = [-1,0,1];
@@ -45,7 +45,7 @@ vf2 = [1,0,-2,0,1]';
 lImG21 = conv2(lIm,hf2,'same');
 lImG22 = conv2(lIm,vf2,'same');
 
-for ii = 1:patch_num,    
+for ii = 1:patch_num  
     row = xrow(ii);
     col = ycol(ii);
     
