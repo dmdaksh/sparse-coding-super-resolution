@@ -72,8 +72,6 @@ stat.elapsed_time=0;
 % optimization loop
 while t < pars.num_trials
     t=t+1;
-    fprintf('  t=%d\n',t);
-
     start_time= cputime;
     stat.fobj_total=0;    
     % Take a random permutation of the samples
@@ -86,24 +84,16 @@ while t < pars.num_trials
         batch_idx = indperm((1:pars.batch_size)+pars.batch_size*(batch-1));
         Xb = X(:,batch_idx);
         
-        % learn coefficients (conjugate gradient)  
-        fprintf('  L1QP_FeatureSign_Set...\n');
+        % learn coefficients (conjugate gradient)   
         S = L1QP_FeatureSign_Set(Xb, B, Sigma, pars.beta, pars.gamma);
         
         sparsity(end+1) = length(find(S(:) ~= 0))/length(S(:));
         
         % get objective
-        fprintf('  getObjective_RegSc...\n');
         [fobj] = getObjective_RegSc(Xb, B, S, Sigma, pars.beta, pars.gamma);       
         stat.fobj_total = stat.fobj_total + fobj;
-
         % update basis
-        fprintf('  l2ls_learn_basis_dual...\n');
-%         B = l2ls_learn_basis_dual(Xb, S, pars.VAR_basis);
-%         [B,opts,res] = l2ls_learn_basis_dual_rj(Xb, S, pars.VAR_basis);
-        [B,~,~] = l2ls_learn_basis_dual_rj(Xb, S, pars.VAR_basis);
-%         [B,opts,res] = l2ls_learn_basis_dual_rj_intpnt(Xb, S, pars.VAR_basis);
-
+        B = l2ls_learn_basis_dual(Xb, S, pars.VAR_basis);
     end
     
     % get statistics
