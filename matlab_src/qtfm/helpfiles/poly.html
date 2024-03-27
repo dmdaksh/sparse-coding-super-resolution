@@ -1,0 +1,91 @@
+<!-- Generated automatically from an XML file of the same name.
+     © Stephen J. Sangwine and Nicolas Le Bihan, 2008-2023.
+--><html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   <title>poly :: Functions (Quaternion Toolbox Function Reference)
+</title><link rel="stylesheet" href="qtfmstyle.css" type="text/css"></head><body><h1>Quaternion Function Reference</h1><h2>poly</h2>
+<p>Characteristic polynomial of a Hermitian quaternion matrix<br>(Quaternion overloading of standard MATLAB&reg; function)
+</p>
+<h2>Syntax</h2><p><tt>P = poly(A)</tt></p>
+<h2>Description</h2>
+<p>
+<tt>poly(A)</tt> computes the characteristic polynomial of a quaternion
+matrix (with limitation to Hermitian matrices).
+</p>
+<p>
+For non-Hermitian quaternion matrices, use the <tt>adjoint</tt>
+function to construct a complex matrix, and then use the MATLAB&reg;
+<tt>poly</tt> function to compute the characteristic polynomial of
+the adjoint matrix. This characteristic polynomial will be of order one
+    greater than the dimension of the quaternion matrix, because the adjoint
+    matrix is double the dimension of the quaternion matrix.
+</p>
+
+<h2>Examples</h2>
+<pre>
+&gt;&gt; q = randq(3)
+
+q = 3x3 quaternion array
+&gt;&gt; Q = q * q'
+
+Q = 3x3 quaternion array  % Make a Hermitian quaternion matrix.
+&gt;&gt; P = poly(Q)
+
+P = 1.0000   -9.0000   17.1475   -7.0271
+
+&gt;&gt; roots(P)
+
+ans =
+
+    6.5436
+    1.8874
+    0.5690
+
+&gt;&gt; eig(Q)
+
+ans =
+
+    6.5436
+    0.5690
+    1.8874
+
+% Notice that the roots of the characteristic polynomial of Q are the same
+% as the eigenvalues.
+
+&gt;&gt; polyvalm(P, adjoint(Q)) % Show that the adjoint of Q satisfies the
+                           % characteristic polynomial (the result is zero
+                           % to within rounding error).
+ans =
+
+   1.0e-13 *
+
+  Columns 1 through 4
+
+  -0.0089 + 0.0022i  -0.0044 + 0.0266i   0.1021 - 0.0266i   0.0022 - 0.0355i
+   0.0000 - 0.0089i  -0.0089 + 0.0200i   0.0266 - 0.0133i  -0.0377 - 0.0394i
+   0.0078 - 0.0022i   0.0044 + 0.0244i   0.0888 - 0.0011i   0.0000 + 0.0000i
+   0.0000 - 0.0355i   0.0311 - 0.0178i  -0.0222 - 0.0355i   0.0977 + 0.0000i
+   0.0178 - 0.0044i   0.0167 + 0.0089i   0.0266 - 0.0711i   0.0133 - 0.0089i
+   0.0000 - 0.0355i  -0.0133 - 0.0355i  -0.0022 + 0.0178i   0.0622 - 0.0244i
+
+  Columns 5 through 6
+
+  -0.0089 + 0.0266i   0.0266 + 0.0000i
+  -0.0061 + 0.0089i  -0.0067 - 0.0533i
+  -0.0089 + 0.0000i  -0.0044 + 0.0089i
+   0.0067 - 0.0266i   0.0488 + 0.0400i
+   0.0178 + 0.0089i   0.0133 + 0.0133i
+  -0.0089 - 0.0178i   0.0533 + 0.0056i
+
+&gt;&gt; 
+</pre>
+
+<h2>See Also</h2>QTFM functions: <a href="eig.html">eig</a>, <a href="ishermitian.html">ishermitian</a>, <a href="adjoint.html">adjoint</a><br>MATLAB&reg; functions: <a href="matlab:doc poly">poly</a>, <a href="matlab:doc roots">roots</a>, <a href="matlab:doc polyval">polyval</a>, <a href="matlab:doc polyvalm">polyvalm</a><br>
+<h2>References</h2><ol><li>
+        Fuzhen Zhang, &#8216;Quaternions and matrices of quaternions&#8217;,
+        <i>Linear Algebra and Applications</i>,
+        <b>251</b>:21-57 (1997). 
+DOI: <a href="http://dx.doi.org/10.1016/0024-3795(95)00543-9">10.1016/0024-3795(95)00543-9</a>.
+        See particularly: Theorem 8.1 and Corollary 5.1.
+    </li></ol>
+<h4>&copy; 2008-2023 Stephen J. Sangwine and Nicolas Le Bihan</h4><p><a href="license.html">License terms.</a></p></body></html>
