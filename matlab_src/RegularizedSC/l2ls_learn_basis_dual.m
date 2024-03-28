@@ -1,4 +1,12 @@
-function B = l2ls_learn_basis_dual(X, S, l2norm, Binit)
+function [B,options,results] = l2ls_learn_basis_dual(X, S, l2norm, Binit)
+% [B,options,results] = l2ls_learn_basis_dual(X, S, l2norm, Binit)
+%
+% OUTPUTS:
+%  B = dictionary
+%  options = options used
+%  results = struct with elap times, etc.
+% 
+% %%%%%%% [original notes below:] %%%%%%%%%%%%%%%%%%%%%
 % Learning basis using Lagrange dual (with basis normalization)
 %
 % This code solves the following problem:
@@ -12,6 +20,7 @@ function B = l2ls_learn_basis_dual(X, S, l2norm, Binit)
 %
 % Written by Honglak Lee <hllee@cs.stanford.edu>
 % Copyright 2007 by Honglak Lee, Alexis Battle, Rajat Raina, and Andrew Y. Ng
+% EDIT: RJ 03-27-2024
 
 L = size(X,1);
 N = size(X,2);
@@ -31,25 +40,35 @@ c = l2norm^2;
 trXXt = sum(sum(X.^2));
 
 lb=zeros(size(dual_lambda));
-options = optimset('GradObj','on', 'Hessian','on');
-%  options = optimset('GradObj','on', 'Hessian','on', 'TolFun', 1e-7);
 
-[x, fval, exitflag, output] = fmincon(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
+options = optimoptions('fmincon','Algorithm','trust-region-reflective',...
+    'SpecifyObjectiveGradient',true, 'Display','iter-detailed','HessianFcn','objective');
+
+[x, fval, exitflag, output,lambda,grad,hessian] = fmincon(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
+
 % output.iterations
 fval_opt = -0.5*N*fval;
-dual_lambda= x;
+fobjective_dual = fval_opt;
+fobjective = fobjective_dual;
+dual_lambda = x;
 
 Bt = (SSt+diag(dual_lambda)) \ XSt';
-B_dual= Bt';
-fobjective_dual = fval_opt;
+B = Bt';
 
-
-B= B_dual;
-fobjective = fobjective_dual;
 toc
+
+results.fmincon.fval = fval;
+results.fmincon.exitflag = exitflag;
+results.fmincon.output = output;
+results.fmincon.lambda = lambda;
+results.fmincon.grad = grad;
+results.fmincon.hessian = hessian;
+results.fobjective = fobjective;
+results.dual_lambda = dual_lambda;
 
 return;
 
+% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -86,5 +105,7 @@ if nargout > 1   % fun called with two output arguments
         H = -H;
     end
 end
-
 return
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

@@ -1,5 +1,14 @@
-function [x,losses]=L1QP_FeatureSign_yang(lambda,A,b)
-% [x,loss]=L1QP_FeatureSign_yang(lambda,A,b)
+%% L1QP_FeatureSign solves nonnegative quadradic programming 
+%% using Feature Sign. 
+%%
+%%    min  0.5*x'*A*x+b'*x+\lambda*|x|
+%%
+%% [net,control]=NNQP_FeatureSign(net,A,b,control)
+%%  
+%% 
+%%
+
+function [x,loss]=L1QP_FeatureSign_yang_rj(lambda,A,b)
 
 A = double(A);
 b = double(b);
@@ -79,18 +88,3 @@ while true
   end
   
 end
-
-
-
-%   ORIGINAL HEADER/HELP NOTES:
-% %% L1QP_FeatureSign solves nonnegative quadradic programming 
-% %% using Feature Sign. 
-% %%
-% %%    min  0.5*x'*A*x+b'*x+\lambda*|x|
-% %%
-% %% [net,control]=NNQP_FeatureSign(net,A,b,control)
-% %%  
-% %% 
-% %%
-
-

@@ -1,4 +1,4 @@
-function [B, S, stat] = reg_sparse_coding(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
+function [B, S, stat] = reg_sparse_coding_rj(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
 % [B, S, stat] = reg_sparse_coding_rj(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
 %
 % Regularized sparse coding
@@ -49,12 +49,11 @@ else
     pars.batch_size = size(X, 2);
 end
 
-% if exist('fname_save', 'var') && ~isempty(fname_save)
-%     pars.filename = fname_save;
-% else
-%     pars.filename = sprintf('NewResults/reg_sc_b%d_%s', num_bases, datestr(now, 30));	
-% end
-pars.filename = [];
+if exist('fname_save', 'var') && ~isempty(fname_save)
+    pars.filename = fname_save;
+else
+    pars.filename = sprintf('NewResults/reg_sc_b%d_%s', num_bases, datestr(now, 30));	
+end
 
 % initialize basis
 if ~exist('initB') || isempty(initB)
@@ -72,22 +71,21 @@ t=0;
 % statistics variable
 stat= [];
 stat.fobj_avg = [];
-stat.cputime=[];
-stat.elaptime=[];
+stat.elapsed_time=0;
 stat.sparsity = [];
-stat.l1qp_time=[];
-stat.l2ls_time=[];
+stat.stime=[];
+stat.btime=[];
 stat.fresidue = [];
 stat.fsparsity = [];
 stat.fregs = [];
 stat.fobj = [];
-stat.numIters = [];
 
 % optimization loop
 while t < pars.num_trials
     t=t+1;
+    fprintf('  t=%d\n',t);
+
     start_time= cputime;
-    stic = tic;
     stat.fobj_total=0;    
     % Take a random permutation of the samples
     indperm = randperm(size(X,2));
@@ -100,17 +98,19 @@ while t < pars.num_trials
         % learn coefficients (conjugate gradient)  
         fprintf('  L1QP_FeatureSign_Set...\n');
         stic=tic;
-        S = L1QP_FeatureSign_Set(Xb, B, Sigma, pars.beta, pars.gamma,true);
+%         S = L1QP_FeatureSign_Set(Xb, B, Sigma, pars.beta, pars.gamma);
+        S = L1QP_FeatureSign_Set_rj(Xb, B, Sigma, pars.beta, pars.gamma);
+        
         stoc=toc(stic);
-        stat.l1qp_time(t)=stoc;
-
+        stat.stime(t)=stoc;
+        
 %         sparsity(end+1) = length(find(S(:) ~= 0))/length(S(:));
         stat.sparsity(t) = length(find(S(:) ~= 0))/length(S(:));
         
         % get objective
         fprintf('  getObjective_RegSc...\n');
 %         [fobj, fresidue, fsparsity, fregs] = getObjective_RegSc(Xb, B, S, Sigma, pars.beta, pars.gamma);  
-        [fobj, fresidue, fsparsity, fregs] = getObjective_RegSc(Xb, B, S, Sigma, pars.beta, pars.gamma);  
+        [fobj, fresidue, fsparsity, fregs] = getObjective_RegSc_rj(Xb, B, S, Sigma, pars.beta, pars.gamma);  
         stat.fobj_total = stat.fobj_total + fobj;
         stat.fobj(t) = fobj;
         stat.fresidue(t) = fresidue;
@@ -120,19 +120,21 @@ while t < pars.num_trials
         % update basis
         fprintf('  l2ls_learn_basis_dual...\n');
         btic=tic;
-        [B,~,~] = l2ls_learn_basis_dual(Xb, S, pars.VAR_basis);
+%         B = l2ls_learn_basis_dual(Xb, S, pars.VAR_basis);
+%         [B,opts,res] = l2ls_learn_basis_dual_rj(Xb, S, pars.VAR_basis);
+        [B,~,~] = l2ls_learn_basis_dual_rj(Xb, S, pars.VAR_basis);
+%         [B,opts,res] = l2ls_learn_basis_dual_rj_intpnt(Xb, S, pars.VAR_basis);
         btoc=toc(btic);
-        stat.l2ls_time(t)=btoc;
+        stat.btime(t)=btoc;
 
     end
     
     % get statistics
     stat.fobj_avg(t)      = stat.fobj_total / pars.num_patches;
-    stat.cputime(t)  = cputime - start_time;
-    stat.elaptime(t) = toc(stic);
+    stat.elapsed_time(t)  = cputime - start_time;
     
     fprintf(['epoch= %d, sparsity = %f, fobj= %f, took %0.2f ' ...
-             'seconds\n'], t, mean(stat.sparsity), stat.fobj_avg(t), stat.elaptime(t));
+             'seconds\n'], t, mean(stat.sparsity), stat.fobj_avg(t), stat.elapsed_time(t));
          
     % save results
 %     fprintf('saving results ...\n');
@@ -141,20 +143,13 @@ while t < pars.num_trials
 %     save(experiment.matfname, 't', 'pars', 'B', 'stat');
 %     fprintf('saved as %s\n', experiment.matfname);
 
+    experiment = [];
+    experiment.matfname = sprintf('%s_iter%d.mat', pars.filename, t);     
+    save(experiment.matfname, 't', 'pars', 'B', 'stat');
+    fprintf('saved as %s\n', experiment.matfname);
 end
 
-stat.numIters = t;
-stat.pars = pars;
-
-% experiment = [];
-% experiment.matfname = sprintf('%s_iter%d.mat', pars.filename, t);     
-% save(experiment.matfname, 't', 'pars', 'B', 'stat');
-% fprintf('saved as %s\n', experiment.matfname);
-
 return
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function retval = assert(expr)
 retval = true;
