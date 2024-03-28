@@ -1,4 +1,5 @@
 function [B, S, stat] = reg_sparse_coding_rj(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
+% [B, S, stat] = reg_sparse_coding_rj(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
 %
 % Regularized sparse coding
 %
@@ -22,8 +23,8 @@ function [B, S, stat] = reg_sparse_coding_rj(X, num_bases, Sigma, beta, gamma, n
 % 
 % %%%%%%%  Edit log:   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Robert Jones, 03-25-2024
-%       [ Edited L1QP_FeatureSign_Set_rj, getObjective_RegSc_rj,
-%       l2ls_learn_basis_dual_rj; Added fields to `stat` struct ]
+%       [ Edited: L1QP_FeatureSign_Set_rj, getObjective_RegSc_rj,
+%        l2ls_learn_basis_dual_rj; Added fields to `stat` struct ]
 
 pars = struct;
 pars.patch_size = size(X,1);
@@ -34,11 +35,11 @@ pars.beta = beta;
 pars.gamma = gamma;
 pars.VAR_basis = 1; % maximum L2 norm of each dictionary atom
 
-if ~isa(X, 'double'),
+if ~isa(X, 'double')
     X = cast(X, 'double');
 end
 
-if isempty(Sigma),
+if isempty(Sigma)
 	Sigma = eye(pars.num_bases);
 end
 
@@ -54,8 +55,6 @@ else
     pars.filename = sprintf('NewResults/reg_sc_b%d_%s', num_bases, datestr(now, 30));	
 end
 
-pars
-
 % initialize basis
 if ~exist('initB') || isempty(initB)
     B = rand(pars.patch_size, pars.num_bases)-0.5;
@@ -66,7 +65,7 @@ else
     B = initB;
 end
 
-[L M]=size(B);
+[L, M]=size(B);
 
 t=0;
 % statistics variable
@@ -138,7 +137,7 @@ while t < pars.num_trials
              'seconds\n'], t, mean(stat.sparsity), stat.fobj_avg(t), stat.elapsed_time(t));
          
     % save results
-    fprintf('saving results ...\n');
+%     fprintf('saving results ...\n');
 %     experiment = [];
 %     experiment.matfname = sprintf('%s.mat', pars.filename);     
 %     save(experiment.matfname, 't', 'pars', 'B', 'stat');
