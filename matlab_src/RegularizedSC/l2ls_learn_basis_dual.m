@@ -42,7 +42,7 @@ trXXt = sum(sum(X.^2));
 lb=zeros(size(dual_lambda));
 
 options = optimoptions('fmincon','Algorithm','trust-region-reflective',...
-    'SpecifyObjectiveGradient',true, 'Display','iter-detailed','HessianFcn','objective');
+    'SpecifyObjectiveGradient',true, 'Display','iter','HessianFcn','objective');
 
 [x, fval, exitflag, output,lambda,grad,hessian] = fmincon(@(x) fobj_basis_dual(x, SSt, XSt, X, c, trXXt), dual_lambda, [], [], [], [], lb, [], [], options);
 

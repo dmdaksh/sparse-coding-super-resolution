@@ -1,4 +1,4 @@
-function [B, S, stat] = reg_sparse_coding(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
+function [B, S, stat] = reg_sparse_coding(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, saveDictEachIter)
 % [B, S, stat] = reg_sparse_coding_rj(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, fname_save)
 %
 % Regularized sparse coding
@@ -25,6 +25,10 @@ function [B, S, stat] = reg_sparse_coding(X, num_bases, Sigma, beta, gamma, num_
 %   Robert Jones, 03-25-2024
 %       [ Edited: L1QP_FeatureSign_Set_rj, getObjective_RegSc_rj,
 %        l2ls_learn_basis_dual_rj; Added fields to `stat` struct ]
+
+if nargin<9
+    saveDictEachIter=false;
+end
 
 pars = struct;
 pars.patch_size = size(X,1);
@@ -77,16 +81,26 @@ stat.elaptime=[];
 stat.sparsity = [];
 stat.l1qp_time=[];
 stat.l2ls_time=[];
+stat.l1qp_cputime=[];
+stat.l2ls_cputime=[];
 stat.fresidue = [];
 stat.fsparsity = [];
 stat.fregs = [];
 stat.fobj = [];
 stat.numIters = [];
+stat.D_change = [];
+stat.S_change = [];
+stat.iterDicts = [];
+stat.initDict = B;
+stat.l2ls_res = [];
+stat.l1qp_res = [];
+
+fprintf('[ reg_sparse_coding..\n');
 
 % optimization loop
 while t < pars.num_trials
     t=t+1;
-    fprintf('  t=%d\n',t);
+    fprintf('  iter=%d\n',t);
 
     start_time= cputime;
     stic = tic;
@@ -101,13 +115,22 @@ while t < pars.num_trials
         
         % learn coefficients (conjugate gradient)  
         fprintf('  L1QP_FeatureSign_Set...\n');
-        stic=tic;
-        S = L1QP_FeatureSign_Set(Xb, B, Sigma, pars.beta, pars.gamma,true);
-        stoc=toc(stic);
-        stat.l1qp_time(t)=stoc;
+        stic=tic; ctic=cputime;
+        [S,l1qp_loss,l1qp_iters] = L1QP_FeatureSign_Set(Xb, B, Sigma, pars.beta, pars.gamma,true);
+        stat.l1qp_time(t)=toc(stic);
+        stat.l1qp_cputime(t) = cputime - ctic;
+        stat.l1qp_res.(sprintf('iter%d',t))=[];
+        stat.l1qp_res.(sprintf('iter%d',t)).loss = l1qp_loss;
+        stat.l1qp_res.(sprintf('iter%d',t)).iters = l1qp_iters;
         
 %         sparsity(end+1) = length(find(S(:) ~= 0))/length(S(:));
         stat.sparsity(t) = length(find(S(:) ~= 0))/length(S(:));
+        if t==1
+            Sprev = S;
+        else
+            stat.S_change(t) = norm(S-Sprev,'fro')/norm(Sprev,'fro');
+            Sprev = S;
+        end
         
         % get objective
         fprintf('  getObjective_RegSc...\n');
@@ -121,10 +144,21 @@ while t < pars.num_trials
 
         % update basis
         fprintf('  l2ls_learn_basis_dual...\n');
-        btic=tic;
-        [B,~,~] = l2ls_learn_basis_dual(Xb, S, pars.VAR_basis);
-        btoc=toc(btic);
-        stat.l2ls_time(t)=btoc;
+        Bprev = B;
+        btic=tic; ctic=cputime;
+        [B,b_opts,b_stat] = l2ls_learn_basis_dual(Xb, S, pars.VAR_basis);
+        stat.l2ls_time(t)=toc(btic);
+        stat.l2ls_cputime(t) = cputime - ctic;
+        stat.D_change(t) = norm(B-Bprev,'fro')/norm(Bprev,'fro');
+        if saveDictEachIter
+            stat.iterDicts(:,:,t) = B;
+        end
+        stat.l2ls_res.(sprintf('iter%d',t))=[];
+        stat.l2ls_res.(sprintf('iter%d',t)).opts = b_opts;
+        stat.l2ls_res.(sprintf('iter%d',t)).stat = b_stat;
+
+        disp('');
+        
 
     end
     
@@ -133,8 +167,8 @@ while t < pars.num_trials
     stat.cputime(t)  = cputime - start_time;
     stat.elaptime(t) = toc(stic);
     
-    fprintf(['epoch= %d, sparsity = %f, fobj= %f, took %0.2f ' ...
-             'seconds\n'], t, mean(stat.sparsity), stat.fobj_avg(t), stat.elaptime(t));
+    fprintf('epoch= %d, DictChange = %g, sparsity = %f, fobj= %f, elaptime %0.2f s, cputime %.02f s\n',...
+        t, stat.D_change(t), mean(stat.sparsity), stat.fobj_avg(t), stat.elaptime(t));
          
     % save results
 %     fprintf('saving results ...\n');
@@ -145,7 +179,7 @@ while t < pars.num_trials
 
 end
 
-stat.numIters = t;
+stat.numItersRun = t;
 stat.pars = pars;
 
 % experiment = [];

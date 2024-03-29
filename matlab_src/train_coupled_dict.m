@@ -1,4 +1,4 @@
-function [Dh, Dl, timers, S, scstat] = train_coupled_dict(Xh, Xl, dict_size, lambda, upscaleFactor, numIters)
+function [Dh, Dl, timers, S, scstat] = train_coupled_dict(Xh, Xl, dict_size, lambda, upscaleFactor, numIters, useBinit)
 % function [Dh, Dl, timers] = train_coupled_dict(Xh, Xl, dict_size, lambda, upscaleFactor)
 %
 % Performs coupled dictionary training on paired high- and low-resolution image
@@ -22,9 +22,13 @@ function [Dh, Dl, timers, S, scstat] = train_coupled_dict(Xh, Xl, dict_size, lam
 %
 % Called by: Demo_Dictionary_Training.m 
 
-% addpath(genpath('RegularizedSC'));
-addpath('matlab_src/RegularizedSC/sc2');
-addpath('matlab_src/RegularizedSC');
+% % addpath(genpath('RegularizedSC'));
+% addpath('RegularizedSC/sc2');
+% addpath('RegularizedSC');
+
+if nargin<7
+    useBinit=false;
+end
 
 timers = [];
 atic = tic; totcpu0 = cputime;
@@ -50,12 +54,15 @@ clear Xh Xl;
 X = X(:, Xnorm > 1e-5);
 X = X./repmat(sqrt(sum(X.^2, 1)), hDim+lDim, 1);
 
-% idx = randperm(size(X, 2));   %included in orig code but not used...
-
+Binit = [];
+if useBinit
+    idx = randperm(size(X, 2));   %included in orig code but not used...
+    Binit = X(:,idx(1:dict_size));
+end
 %[ dictionary training
-fprintf('Running dictionary learning...\n');
-[D,S,scstat] = reg_sparse_coding(X, dict_size, [], 0, lambda, numIters);
-
+% fprintf('Running dictionary learning...\n');
+[D,S,scstat] = reg_sparse_coding(X, dict_size, [], 0, lambda, numIters, [], Binit, false);
+% g(X, num_bases, Sigma, beta, gamma, num_iters, batch_size, initB, saveDictEachIter)
 Dh = D(1:hDim, :);
 Dl = D(hDim+1:end, :);
 

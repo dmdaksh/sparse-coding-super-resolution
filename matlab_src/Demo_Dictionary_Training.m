@@ -40,12 +40,12 @@ if ~exist(outdir,'dir')
 end
 
 %[ dictionary parameters (run useAuthorsDictParams.m to get authors params)
-dict_size   = 100;          % dictionary size
+dict_size   = 2048;          % dictionary size
 lambda      = 0.1;         % sparsity regularization
 patch_size  = 3;            % image patch size
-nSmp        = 1000; %100000;       % number of patches to sample
+nSmp        = 100000;       % number of patches to sample
 upscaleFactor     = 3;            % upscaling factor
-numIters = 2;
+numIters = 10;
 
 %[ other parameters
 pruningVarThresh = 10;
@@ -59,14 +59,25 @@ pruningVarThresh = 10;
 %% Dictionary learning
 % joint sparse coding 
 tcdtic=tic;
-[Dh, Dl, dict_timers] = train_coupled_dict(Xh, Xl, dict_size, lambda, upscaleFactor, numIters);
+[Dh, Dl, dict_timers, S, sparsecode_stat] = train_coupled_dict(Xh, Xl, dict_size, lambda, upscaleFactor, numIters);
 tcdtoc=toc(tcdtic);
 dict_timers.total_elap_time = tcdtoc;
 
 %% Save dictionary
-dict_name = ['D_' num2str(dict_size) '_' num2str(lambda) '_' num2str(patch_size) '.mat'];
+dlparams.dict_size   = dict_size;          % dictionary size
+dlparams.lambda      = lambda;         % sparsity regularization
+dlparams.patch_size  = patch_size;            % image patch size
+dlparams.nSmp        = nSmp;       % number of patches to sample
+dlparams.upscaleFactor     = upscaleFactor;            % upscaling factor
+dlparams.numIters = numIters;
+dlparams.pruningVarThresh = pruningVarThresh;
+
+
+% dict_name = ['D_' num2str(dict_size) '_' num2str(lambda) '_' num2str(patch_size) '.mat'];
+dict_name = ['D_' num2str(dict_size) '_lam-' num2str(lambda) '_patchsz-' num2str(patch_size) ...
+    '_zoom-' num2str(upscaleFactor) '.mat'];
 dict_path = fullfile(outdir,dict_name);
-save(dict_path, 'Dh', 'Dl', 'dict_timers');
+save(dict_path, 'Dh', 'Dl', 'dict_timers','dlparams', 'S', 'sparsecode_stat');
 
 if 0 == 1
     %% Load results
