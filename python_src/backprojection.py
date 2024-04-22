@@ -17,15 +17,17 @@ def gauss2D(shape,sigma):
         h /= sumh
     return h
 
-def backprojection(img_hr, img_lr, maxIter):
+def backprojection(img_sr, img_lr, c, maxIter):
     p = gauss2D((5, 5), 1)
     p = np.multiply(p, p)
     p = np.divide(p, np.sum(p))
 
+    img_initial_sr = img_sr
+
     for i in range(maxIter):
-        img_lr_ds = resize(img_hr, img_lr.shape, anti_aliasing=1)
+        img_lr_ds = resize(img_sr, img_lr.shape, anti_aliasing=1)
         img_diff = img_lr - img_lr_ds
 
-        img_diff = resize(img_diff, img_hr.shape)
-        img_hr += convolve2d(img_diff, p, 'same')
-    return img_hr
+        img_diff = resize(img_diff, img_sr.shape)
+        img_sr += convolve2d(img_diff, p, 'same') + c * (img_sr - img_initial_sr)
+    return img_sr

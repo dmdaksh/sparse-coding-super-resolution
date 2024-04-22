@@ -7,7 +7,7 @@ def fss_yang(lmbd, A, b):
     L1QP_FeatureSign solves nonnegative quadradic programming 
     using Feature Sign. 
 
-    min  0.5*x'*A*x+b'*x+\lambda*|x|
+    min  0.5*x'*A*x+b'*x+lambda*|x|
 
     [net,control]=NNQP_FeatureSign(net,A,b,control)
     """

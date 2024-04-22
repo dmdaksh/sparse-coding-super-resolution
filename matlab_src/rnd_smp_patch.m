@@ -23,5 +23,5 @@ for ii = 1:img_num,
     Xl = [Xl, L];
 end
 
-patch_path = ['Training/rnd_patches_' num2str(patch_size) '_' num2str(num_patch) '_s' num2str(upscale) '.mat'];
-save(patch_path, 'Xh', 'Xl');
+% patch_path = ['Training/rnd_patches_' num2str(patch_size) '_' num2str(num_patch) '_s' num2str(upscale) '.mat'];
+% save(patch_path, 'Xh', 'Xl');

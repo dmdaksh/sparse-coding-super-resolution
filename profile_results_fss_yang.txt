@@ -1,0 +1,29 @@
+         43 function calls in 0.002 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        4    0.000    0.000    0.002    0.001 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/core/fromnumeric.py:71(_wrapreduction)
+        4    0.002    0.001    0.002    0.001 {method 'reduce' of 'numpy.ufunc' objects}
+        3    0.000    0.000    0.002    0.001 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/core/fromnumeric.py:2421(all)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/lib/arraysetops.py:766(isin)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/lib/arraysetops.py:524(in1d)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/core/fromnumeric.py:2692(max)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.abs}
+        3    0.000    0.000    0.000    0.000 {built-in method numpy.zeros}
+        1    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.all}
+        2    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/lib/arraysetops.py:630(<genexpr>)
+        1    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+        4    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        2    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+        3    0.000    0.000    0.000    0.000 {built-in method numpy.asarray}
+        3    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+        3    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/core/fromnumeric.py:2416(_all_dispatcher)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/core/multiarray.py:741(dot)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/core/fromnumeric.py:2687(_max_dispatcher)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/lib/arraysetops.py:519(_in1d_dispatcher)
+        1    0.000    0.000    0.000    0.000 /Users/daksh/miniconda3/lib/python3.12/site-packages/numpy/lib/arraysetops.py:761(_isin_dispatcher)
+
+

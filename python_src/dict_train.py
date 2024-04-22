@@ -18,9 +18,9 @@ import pickle
 # For any questions, send email to jyang29@uiuc.edu
 # =========================================================================
 
-dict_size   = 2048         # dictionary size
+dict_size   = 256         # dictionary size
 lmbd        = 0.1          # sparsity regularization
-patch_size  = 3            # image patch size
+patch_size  = 5            # image patch size
 nSmp        = 100000       # number of patches to sample
 upscale     = 3            # upscaling factor
 
