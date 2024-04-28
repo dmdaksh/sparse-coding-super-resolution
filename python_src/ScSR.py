@@ -21,29 +21,29 @@ from scipy.signal import convolve2d
 from tqdm import tqdm
 
 #
-# def extract_lr_feat(img_lr):
-#     h, w = img_lr.shape
-#     img_lr_feat = np.zeros((h, w, 4))
-#
-#     # First order gradient filters
-#     hf1 = [
-#         [-1, 0, 1],
-#     ] * 3
-#     vf1 = np.transpose(hf1)
-#
-#     img_lr_feat[:, :, 0] = convolve2d(img_lr, hf1, "same")
-#     img_lr_feat[:, :, 1] = convolve2d(img_lr, vf1, "same")
-#
-#     # Second order gradient filters
-#     hf2 = [
-#         [1, 0, -2, 0, 1],
-#     ] * 3
-#     vf2 = np.transpose(hf2)
-#
-#     img_lr_feat[:, :, 2] = convolve2d(img_lr, hf2, "same")
-#     img_lr_feat[:, :, 3] = convolve2d(img_lr, vf2, "same")
-#
-#     return img_lr_feat
+def extract_lr_feat(img_lr):
+    h, w = img_lr.shape
+    img_lr_feat = np.zeros((h, w, 4))
+
+    # First order gradient filters
+    hf1 = [
+        [-1, 0, 1],
+    ] * 3
+    vf1 = np.transpose(hf1)
+
+    img_lr_feat[:, :, 0] = convolve2d(img_lr, hf1, "same")
+    img_lr_feat[:, :, 1] = convolve2d(img_lr, vf1, "same")
+
+    # Second order gradient filters
+    hf2 = [
+        [1, 0, -2, 0, 1],
+    ] * 3
+    vf2 = np.transpose(hf2)
+
+    img_lr_feat[:, :, 2] = convolve2d(img_lr, hf2, "same")
+    img_lr_feat[:, :, 3] = convolve2d(img_lr, vf2, "same")
+
+    return img_lr_feat
 
 
 def extract_cnn_features(y_channel):
@@ -134,8 +134,8 @@ def ScSR(img_lr_y, size, upscale, Dh, Dl, lmbd, overlap, patch_size):
     img_hr = np.zeros(img_us.shape)
     cnt_matrix = np.zeros(img_us.shape)
 
-    # img_lr_y_feat = extract_lr_feat(img_hr)
-    img_lr_y_feat = extract_cnn_features(img_hr)
+    img_lr_y_feat = extract_lr_feat(img_hr)
+    # img_lr_y_feat = extract_cnn_features(img_hr)
 
     ### discard this code ###
     # gridx = np.append(create_list_step(0, img_us_width - patch_size - 1, patch_size - overlap), img_us_width - patch_size - 1)

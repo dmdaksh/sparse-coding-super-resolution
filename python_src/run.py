@@ -75,11 +75,11 @@ overlap = 1
 lmbd = 0.1
 upscale = 3
 maxIter = 100
-c = 0.0
+c = 0.09
 ###
 
 # exp_name = dict_name + "exp1"
-exp_name = dict_name + "cnn"
+exp_name = dict_name + "recon"
 
 img_lr_file = listdir(img_lr_dir)
 # random sample only n image
