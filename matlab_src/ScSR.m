@@ -1,4 +1,23 @@
 function [hIm] = ScSR(lIm, up_scale, Dh, Dl, lambda, overlap, featType)
+% [hIm] = ScSR(lIm, up_scale, Dh, Dl, lambda, overlap, featType)
+%   Run ScSR single-image super-resolution restoration/reconstruction.
+% 
+% INPUTS:
+%   lIm       = input LR image to recon
+%   up_scale  = magnification factor 
+%   Dh        = HR dict     
+%   Dl        = LR dict   
+%   lambda    = sparsity regularization param 
+%   overlap   = overlap (pixels) b/w adjacent patches
+%   featType  = LR feature type used in dict; (optional;)
+%                2==normal Yang et al 2010 (default)
+%                'sm2','2sm' == smoothed second order 
+%                3 == third order features included
+% OUTPUTS:
+%   hIm       = Super-resolution restored image
+%
+%
+
 
 if nargin<7
     featType = 2;
@@ -23,7 +42,7 @@ if featType == 2
     lImfea = extr_lIm_fea(mIm);
 elseif featType == 3
     lImfea = extr_lIm_fea_mod(mIm);
-elseif strcmp(featType,'2sm')
+elseif contains(featType,'2sm') || contains(featType,'sm2')
     lImfea = extr_lIm_fea_sm2(mIm);
 end
 
