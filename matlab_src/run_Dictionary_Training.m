@@ -99,7 +99,7 @@ save(dict_path, 'Dh', 'Dl', 'dict_timers','dlparams', 'S', 'sparsecode_stat');
 dlparams.dict_path = dict_path;
 
 
-if 1 == 1
+if 0 == 1
     fprintf(' -making plots..\n');
     
     %[ display dictionary atoms

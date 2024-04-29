@@ -1,4 +1,8 @@
-function [hIm] = ScSR(lIm, up_scale, Dh, Dl, lambda, overlap)
+function [hIm] = ScSR(lIm, up_scale, Dh, Dl, lambda, overlap, featType)
+
+if nargin<7
+    featType = 2;
+end
 
 % normalize the dictionary
 norm_Dl = sqrt(sum(Dl.^2, 1)); 
@@ -15,7 +19,13 @@ cntMat = zeros(size(mIm));
 [h, w] = size(mIm);
 
 % extract low-resolution image features
-lImfea = extr_lIm_fea(mIm);
+if featType == 2
+    lImfea = extr_lIm_fea(mIm);
+elseif featType == 3
+    lImfea = extr_lIm_fea_mod(mIm);
+elseif strcmp(featType,'2sm')
+    lImfea = extr_lIm_fea_sm2(mIm);
+end
 
 % patch indexes for sparse recovery (avoid boundary)
 gridx = 3:patch_size - overlap : w-patch_size-2;

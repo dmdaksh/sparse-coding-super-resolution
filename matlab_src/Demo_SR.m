@@ -24,12 +24,28 @@ addpath(pwd);  % assuming that `pwd` == /sparse-coding-super-resolution/matlab_s
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %[ define dirs
 testDataDir = 'Data/Testing';
-dictDir = 'Dictionary_rj';
+dictDir = 'newdicts';
+nsizes = [100,50,25];
+dictPatchsize = 5;
+dictLam = 0.1;
+dsizes = [256,512,1024];
+
+dictNames = {};
+for nn=1:length(nsizes)
+    nsamp=nsizes(nn);
+    for dd=1:length(dsizes)
+        dictSize=dsizes(dd);
+    
+        dictName = strcat('D_',num2str(dictSize),'_lam-',...
+            num2str(dictLam),'_patchsz-',num2str(dictPatchsize),...
+            '.mat');
+    end
+end
+
 
 %[ define dictionary (via params)    (% dictName = 'D_2048_0.1_3.mat';)
-dictPatchsize = 3;
+
 dictSize = 2048;
-dictLam = 0.1;
 dictName = strcat('D_',num2str(dictSize),'_',...
     num2str(dictLam),'_',num2str(dictPatchsize,'.mat'));
 dictPath = fullfile(dictDir,dictName);
