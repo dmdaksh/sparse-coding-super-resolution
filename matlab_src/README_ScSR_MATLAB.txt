@@ -18,7 +18,7 @@ Details:
  - runs ScSR single-image super-resolution using learned dictionary
 
 
-(1) Demo_Dictionary_Comparison.m
+(1) Demo_DictionaryCompare.m
 
  - performs dictionary training using different parameters (# of atoms = 256, 512, 1024; # of randomly sampled image patches = 25k, 50k, 100k)
  - performs ScSR super-resolution reconstruction/restoration of test image from Yang et al. (2010)
