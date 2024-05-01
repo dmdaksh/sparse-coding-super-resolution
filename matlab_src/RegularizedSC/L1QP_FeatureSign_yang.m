@@ -1,4 +1,4 @@
-function [x,losses]=L1QP_FeatureSign_yang(lambda,A,b)
+function [x,losses,iter_count]=L1QP_FeatureSign_yang(lambda,A,b)
 % [x,loss]=L1QP_FeatureSign_yang(lambda,A,b)
 
 A = double(A);
@@ -12,9 +12,11 @@ grad=A*sparse(x)+b;
 
 cnt=0;
 losses = [];
+iter_count.inner_loop = [];
+iter_count.outer_loop = [];
 while true
     cnt=cnt+1;
-    if mod(cnt,10000)==0, fprintf('outcnt=%d\n',cnt); end
+%     if mod(cnt,10000)==0, fprintf('outcnt=%d\n',cnt); end
   
   if grad(mi)>lambda+EPS
     x(mi)=(lambda-grad(mi))/A(mi,mi);
@@ -29,7 +31,7 @@ while true
   incnt=0;
   while true
       incnt=incnt+1;
-      if mod(incnt,10000)==0, fprintf('incnt=%d\n',incnt); end
+%       if mod(incnt,10000)==0, fprintf('incnt=%d\n',incnt); end
 
     a=x~=0;   %active set
     Aa=A(a,a);
@@ -69,18 +71,19 @@ while true
     x(a)=x_min;
     loss=o_min;
     losses(end+1)=loss;
+    iter_count.inner_loop(end+1)=incnt;
   end 
     
   grad=A*sparse(x)+b;
   
-  [ma mi]=max(abs(grad).*(x==0));
-  if ma <= lambda+EPS,
+  [ma, mi]=max(abs(grad).*(x==0));
+  if ma <= lambda+EPS
     break;
   end
   
 end
 
-
+iter_count.outer_loop = cnt;
 
 %   ORIGINAL HEADER/HELP NOTES:
 % %% L1QP_FeatureSign solves nonnegative quadradic programming 

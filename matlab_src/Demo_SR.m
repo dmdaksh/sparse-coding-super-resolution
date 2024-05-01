@@ -11,35 +11,76 @@
 % ECE Department, University of Illinois at Urbana-Champaign
 % For any questions, send email to jyang29@uiuc.edu
 % =========================================================================
+% Edited by: RJ | 03-28-2024
+%  - fixed image_list, ...
+% =========================================================================
 
-addpath(genpath('/Users/robertjones/Desktop/W24/556/project/super-res-sparse-coding/sparseCodingSuperResolution-master'));
-addpath('/Users/robertjones/Desktop/W24/556/project/super-res-sparse-coding/qtfm');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+addpath('qtfm');
+addpath(pwd);  % assuming that `pwd` == /sparse-coding-super-resolution/matlab_src
 
-% clear all; clc;
+% clear; clc; close all
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%[ define dirs
+testDataDir = 'Data/Testing';
+dictDir = 'newdicts';
+nsizes = [100,50,25];
+dictPatchsize = 5;
+dictLam = 0.1;
+dsizes = [256,512,1024];
+
+dictNames = {};
+for nn=1:length(nsizes)
+    nsamp=nsizes(nn);
+    for dd=1:length(dsizes)
+        dictSize=dsizes(dd);
+    
+        dictName = strcat('D_',num2str(dictSize),'_lam-',...
+            num2str(dictLam),'_patchsz-',num2str(dictPatchsize),...
+            '.mat');
+    end
+end
+
+
+%[ define dictionary (via params)    (% dictName = 'D_2048_0.1_3.mat';)
+
+dictSize = 2048;
+dictName = strcat('D_',num2str(dictSize),'_',...
+    num2str(dictLam),'_',num2str(dictPatchsize,'.mat'));
+dictPath = fullfile(dictDir,dictName);
+if ~exist(dictPath,'file')
+    warning('NO DICTIONARY FOUND:\n %s\n',dictPath);
+    return
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%[ set parameters
+lambda      = 0.2;                   % sparsity regularization
+overlap     = dictPatchsize - 1; %2; %4;                    % the more overlap the better (i.e., 4 for patch size 5x5)
+up_scale    = 3; %2;                   % scaling factor, depending on the trained dictionary
+maxIter     = 20;                   % if 0, do not use backprojection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%[ images to run ScSR on
 image_list = {'Lena.png'};
 
-%     {'The_Big_Bang_Theory1_S19E01_0248_wanted.png';
-%     'The_Simpsons_S19E01_0003_wanted.png'
-%     };
+
 for i = 1:size(image_list,1)
     fn_full = fullfile(sprintf('Data/Testing/%s_res.png',image_list{i}(1:end-4)));
-%     if exist(fn_full,'file')
-%         continue;
-%     end
+    if exist(fn_full,'file')
+        continue;
+    end
     % read test image
     testImageName = sprintf('Data/Testing/%s',image_list{i});
     im_l = imread(testImageName);
 
-    % set parameters
-    lambda = 0.2;                   % sparsity regularization
-    overlap = 4;                    % the more overlap the better (patch size 5x5)
-    up_scale = 2;                   % scaling factor, depending on the trained dictionary
-    maxIter = 20;                   % if 0, do not use backprojection
+
 
     % load dictionary
-    dictFileName = 'NewDictionary/D_512_0.15_5_s2.mat';
+%     dictFileName = 'NewDictionary/D_512_0.15_5_s2.mat';
     % dictFileName = 'Dictionary/D_1024_0.15_5.mat';
+    dictFileName = 'Dictionary_rj/D_2048_0.1_3.mat';
     load(dictFileName,'Dh','Dl');
 
     % change color space, work on illuminance only
