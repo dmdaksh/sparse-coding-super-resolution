@@ -9,7 +9,11 @@ This project implements single-image super-resolution (SISR) using sparse repres
 ## Key Features
 
 ✅ Sparse Coding-Based Super-Resolution using dictionary learning
+
 ✅ Optimized Dictionary Training to speed up sparse representations
+
 ✅ Deep Feature Extraction using ResNet18 instead of handcrafted features
+
 ✅ Custom Blurring Techniques including Bilateral Filtering
+
 ✅ Benchmarking against standard interpolation (bicubic) and other SR methods
